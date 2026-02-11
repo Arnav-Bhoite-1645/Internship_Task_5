@@ -14,7 +14,8 @@ import {
   Bell,
   User,
   Sun,
-  ChevronRight
+  ChevronRight,
+  Clock
 } from 'lucide-react';
 
 const App = () => {
@@ -115,7 +116,7 @@ const App = () => {
   };
 
   const logSleep = () => {
-    const val = prompt("Hours of sleep last night?");
+    const val = prompt("How many hours did you sleep last night?");
     if (val && !isNaN(val)) {
       setSleepData([...sleepData.slice(1), parseFloat(val)]);
     }
@@ -146,15 +147,22 @@ const App = () => {
     <div className="card" title="Visual analysis of your sleep hours over the last 7 days">
       <h3 className="card-title">
         Sleep Cycle
-        <button onClick={logSleep} className="log-btn" title="Click to log last night's sleep hours">Log</button>
+        <button onClick={logSleep} className="log-btn" title="Click to log last night's sleep hours">Log Sleep</button>
       </h3>
       <div className="chart-area">
         {sleepData.map((h, i) => (
-          <div key={i} className="chart-bar-container" title={`${h} hours of sleep on day ${i + 1}`}>
+          <div key={i} className="chart-bar-container" title={`${h} hours of sleep`}>
+            {/* Value Label Above Bar - Matching image_6476fe.png */}
+            <span className="bar-value-label">{h}h</span>
             <div className="chart-bar" style={{ height: `${(h / 12) * 100}%` }}></div>
             <span className="chart-label">{['M','T','W','T','F','S','S'][i]}</span>
           </div>
         ))}
+      </div>
+      {/* Visual Target Guide */}
+      <div className="chart-legend">
+        <div className="legend-item"><div className="dot" style={{background: 'var(--chart-blue)'}}></div> Actual Hours</div>
+        <div className="legend-item"><div className="dot" style={{background: 'var(--border)'}}></div> 8h Goal Target</div>
       </div>
     </div>
   );
@@ -171,7 +179,7 @@ const App = () => {
         <div className="bmi-display" title={`Your current category is: ${bmi.category}`}>
           <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--inactive)' }}>CURRENT SCORE</span>
           <div style={{ fontSize: '3rem', fontWeight: 900, color: bmi.color }}>{bmi.score || '--'}</div>
-          <div style={{ padding: '4px 12px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 800, backgroundColor: 'var(--white)', color: bmi.color, border: `1px solid ${bmi.color}` }}>
+          <div style={{ padding: '4px 12px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 800, backgroundColor: 'var(--bg)', color: bmi.color, border: `1px solid ${bmi.color}` }}>
             {bmi.category.toUpperCase()}
           </div>
         </div>
@@ -431,23 +439,63 @@ const App = () => {
         .habit-name { font-weight: 700; margin-left: 1rem; color: var(--text-main); }
         .habit-name.strikethru { color: var(--inactive); text-decoration: line-through; font-weight: 500; }
 
-        /* Sleep Chart */
+        /* --- SLEEP CHART REPAIR (Matched to Neat Design) --- */
         .chart-area {
-          height: 200px;
+          height: 220px;
           display: flex;
           align-items: flex-end;
-          justify-content: space-between;
-          padding-top: 1rem;
+          justify-content: space-around;
+          padding: 2rem 0.5rem 1rem 0.5rem;
           border-bottom: 1px solid var(--border);
-          margin-bottom: 0.75rem;
+          margin-bottom: 1rem;
+          position: relative;
+        }
+
+        .chart-bar-container { 
+          display: flex; 
+          flex-direction: column; 
+          align-items: center; 
+          flex: 0 1 40px; 
+          height: 100%;
+          justify-content: flex-end;
+          position: relative;
+        }
+        
+        .bar-value-label {
+          font-size: 0.8rem;
+          font-weight: 900;
+          margin-bottom: 0.5rem;
+          color: var(--text-main);
+          text-align: center;
+          width: 100%;
         }
 
         .chart-bar {
-          width: 38px;
+          width: 24px;
           background: var(--chart-blue);
-          border-radius: 8px 8px 0 0;
+          border-radius: 12px 12px 6px 6px;
           transition: height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          cursor: help;
         }
+
+        .chart-label { 
+          margin-top: 1rem;
+          font-size: 0.8rem; 
+          font-weight: 900; 
+          color: var(--inactive); 
+        }
+
+        .chart-legend {
+          display: flex;
+          gap: 1.5rem;
+          font-size: 0.75rem;
+          font-weight: 800;
+          color: var(--text-muted);
+          margin-top: 0.5rem;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
 
         /* BMI display fix */
         .bmi-display {
@@ -491,6 +539,15 @@ const App = () => {
         .todo-input {
           padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--border);
           background: var(--bg); color: var(--text-main); font-weight: 500; outline: none;
+        }
+
+        .sleep-list-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.75rem 0;
+          border-bottom: 1px solid var(--border);
+          font-weight: 600;
+          font-size: 0.9rem;
         }
 
         /* Responsive */
@@ -575,7 +632,27 @@ const App = () => {
         )}
 
         {activeTab === 'habits' && <HabitTracker />}
-        {activeTab === 'sleep' && <div className="dashboard-grid"><div className="col-span-2"><SleepChart /></div></div>}
+        {activeTab === 'sleep' && (
+          <div className="dashboard-grid">
+            <div className="col-span-2"><SleepChart /></div>
+            <div className="card col-span-2">
+              <h3 className="card-title">Daily Breakdown</h3>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, i) => (
+                  <div key={day} className="sleep-list-item">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <Clock size={16} className="text-muted" />
+                      <span>{day}</span>
+                    </div>
+                    <span style={{ color: sleepData[i] >= 7.5 ? 'var(--success)' : 'var(--text-muted)' }}>
+                      {sleepData[i]} Hours
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
         {activeTab === 'bmi' && <BMICard />}
         {activeTab === 'settings' && <SettingsView />}
       </main>
