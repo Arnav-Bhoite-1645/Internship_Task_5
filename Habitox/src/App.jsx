@@ -198,7 +198,7 @@ const App = () => {
           <div className="avatar"><User size={32} /></div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>User Tracker</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>user@habitflow.com</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>user@habitox.com</div>
           </div>
         </div>
       </div>
@@ -579,7 +579,7 @@ const App = () => {
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-icon"><TrendingUp size={24} /></div>
-          <span className="brand-name">HabitFlow</span>
+          <span className="brand-name">Habitox</span>
         </div>
         
         <nav className="nav-list">
